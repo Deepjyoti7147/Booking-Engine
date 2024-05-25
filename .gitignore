@@ -6,7 +6,7 @@ db.sqlite3
 db.sqlite3-journal
 
 
-__pycache__/
+Booking_Engine/HotelReg/__pycache__/
 *.py[cod]
 *$py.class
 
@@ -62,6 +62,7 @@ coverage.xml
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+Booking_Engine/HotelReg/migrations/
 
 # Flask stuff:
 instance/
