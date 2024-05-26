@@ -24,7 +24,8 @@ class Room(models.Model):
     room_type = models.CharField(max_length=50)
     price = models.DecimalField(max_digits=8, decimal_places=2)
     is_available = models.BooleanField(default=True)
-
+    current_booking = models.OneToOneField('Booking', related_name='room_booking', null=True, blank=True, on_delete=models.SET_NULL)
+    
     class Meta:
         unique_together = ('hotel', 'room_number')
 

@@ -6,11 +6,12 @@ class HotelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Hotel
         fields = ['id', 'name', 'address', 'phone_number', 'bin', 'owner_name']
+        read_only_fields = ['bin']
 
 class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Room
-        fields = ['id', 'hotel', 'room_number', 'room_type', 'price', 'is_available', 'current_booking']
+        fields = ['id', 'room_number', 'room_type', 'price', 'is_available', 'current_booking']
 
 class BookingSerializer(serializers.ModelSerializer):
     class Meta:
