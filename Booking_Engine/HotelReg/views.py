@@ -1,5 +1,5 @@
 # hotel/views.py
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.exceptions import ValidationError
 from .models import Hotel, Room, Booking
 from .serializers import HotelSerializer, RoomSerializer, BookingSerializer
@@ -13,18 +13,26 @@ class RoomViewSet(viewsets.ModelViewSet):
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
 
-    def perform_create(self, serializer):
-        bin = self.request.data.get('hotel_bin')  # Assuming 'hotel_bin' is passed in the request data
-        hotel = Hotel.objects.get(bin=bin)
-        serializer.save(hotel=hotel)
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
     def perform_update(self, serializer):
         bin = self.request.data.get('hotel_bin')  # Assuming 'hotel_bin' is passed in the request data
         hotel = Hotel.objects.get(bin=bin)
         serializer.save(hotel=hotel)
+
     # Add a custom method to retrieve rooms by hotel
     def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset().filter(hotel__bin=request.query_params.get('hotel_bin'))
+        hotel_bin = request.query_params.get('hotel_bin')
+        if hotel_bin:
+            queryset = self.get_queryset().filter(hotel__bin=hotel_bin)
+        else:
+            queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
