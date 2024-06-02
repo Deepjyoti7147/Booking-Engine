@@ -40,9 +40,10 @@ class BookingViewSet(viewsets.ModelViewSet):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
 
-    def perform_create(self, serializer):
+'''    def perform_create(self, serializer):
         room = serializer.validated_data['room']
         if room.is_available:
             serializer.save()
         else:
             raise ValidationError("Room is not available for booking.")
+'''

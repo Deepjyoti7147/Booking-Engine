@@ -39,6 +39,10 @@ class Booking(models.Model):
     check_in = models.DateTimeField()
     check_out = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f'{self.guest_name} - {self.room.room_number}'
 
     def save(self, *args, **kwargs):
         if self.room.current_booking is None or self.check_in > self.room.current_booking.check_out:
