@@ -23,8 +23,6 @@ class Room(models.Model):
     room_number = models.CharField(max_length=10)
     room_type = models.CharField(max_length=50)
     price = models.DecimalField(max_digits=8, decimal_places=2)
-    is_available = models.BooleanField(default=True)
-    current_booking = models.OneToOneField('Booking', related_name='room_booking', null=True, blank=True, on_delete=models.SET_NULL)
     
     class Meta:
         unique_together = ('hotel', 'room_number')
@@ -45,18 +43,17 @@ class Booking(models.Model):
         return f'{self.guest_name} - {self.room.room_number}'
 
     def save(self, *args, **kwargs):
-        if self.room.current_booking is None or self.check_in > self.room.current_booking.check_out:
-            super().save(*args, **kwargs)
-            self.room.current_booking = self
-            self.room.is_available = False
-            self.room.save()
-        else:
+        conflicting_bookings = Booking.objects.filter(
+            room=self.room,
+            check_in__lt=self.check_out,
+            check_out__gt=self.check_in,
+            is_active=True
+        ).exclude(pk=self.pk)
+
+        if conflicting_bookings.exists():
             raise ValueError("The room is already booked for the selected dates.")
+        
+        super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        room = self.room
         super().delete(*args, **kwargs)
-        if room.current_booking == self:
-            room.current_booking = None
-            room.is_available = True
-            room.save()

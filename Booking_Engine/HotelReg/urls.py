@@ -12,11 +12,6 @@ router.register(r'bookings', BookingViewSet)
 hotel_router = DefaultRouter()
 hotel_router.register(r'rooms', RoomViewSet, basename='hotel-rooms')
 
-room_router = DefaultRouter()
-room_router.register(r'bookings', BookingViewSet, basename='room-bookings')
-
 urlpatterns = [
     path('', include(router.urls)),
-    path('hotels/<int:hotel_pk>/', include(hotel_router.urls)),
-    path('rooms/<int:room_pk>/', include(room_router.urls)),
 ]

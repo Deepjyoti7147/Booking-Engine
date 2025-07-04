@@ -9,23 +9,13 @@ class HotelSerializer(serializers.ModelSerializer):
         read_only_fields = ['bin']
 
 class RoomSerializer(serializers.ModelSerializer):
+    hotel_bin = serializers.CharField(write_only=True)
     class Meta:
         model = Room
-        fields = ['id', 'room_number', 'room_type', 'price', 'is_available', 'current_booking']
-    
-    def create(self, validated_data):
-        hotel_bin = validated_data.pop('hotel_bin')
-        hotel = Hotel.objects.get(bin=hotel_bin)
-        room_number = validated_data.get('room_number')
-
-        # Check if the room with the same number already exists for the hotel
-        if Room.objects.filter(hotel=hotel, room_number=room_number).exists():
-            raise serializers.ValidationError("This room number already exists for the hotel.")
-
-        room = Room.objects.create(hotel=hotel, **validated_data)
-        return room
+        fields = ['id', 'hotel_bin', 'room_number', 'room_type', 'price']
 
 class BookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
-        fields = ['room', 'guest_name', 'check_in', 'check_out', 'is_active']
+        fields = ['id', 'room', 'guest_name', 'guest_email', 'check_in', 'check_out', 'created_at', 'is_active']
+        read_only_fields = ['created_at']
